@@ -3,7 +3,7 @@ import { t } from '../i18n';
 import { FaCalendarAlt, FaSyncAlt, FaChartBar, FaUsers, FaBriefcase, FaRupeeSign, FaArrowUp, FaArrowDown } from 'react-icons/fa';
 import { LineChart, Line, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 
-export default function Dashboard({ district }) {
+export default function Dashboard({ district, currentLang }) {
   const [districtData, setDistrictData] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
@@ -21,10 +21,10 @@ export default function Dashboard({ district }) {
     fetch(endpoint)
       .then(response => {
         if (response.status === 404) {
-          throw new Error(`District "${district}" database में नहीं मिला। कृपया list से दूसरा district select करें।`);
+          throw new Error(t('noData'));
         }
         if (!response.ok) {
-          throw new Error('Data load नहीं हो सका');
+          throw new Error(t('loading'));
         }
         return response.json();
       })
@@ -35,13 +35,13 @@ export default function Dashboard({ district }) {
             setSelectedYear(jsonData.data[0].year);
           }
         } else {
-          setError(jsonData.message || `${district} के लिए data उपलब्ध नहीं है। दूसरा district select करें।`);
+          setError(jsonData.message || t('noData'));
           setDistrictData(null);
         }
       })
       .catch(err => {
         console.error('Fetch error:', err);
-        setError(err.message || 'Data load नहीं हो सका। नीचे दी गई list से district select करें।');
+        setError(err.message || t('noData'));
         setDistrictData(null);
       })
       .finally(() => {
@@ -139,11 +139,11 @@ export default function Dashboard({ district }) {
           </div>
           <div className="stat-content">
             <h3>{totalWorkers.toLocaleString('en-IN')}</h3>
-            <p>👷‍♂️ कुल श्रमिक</p>
+            <p>{t('workersLabel')}</p>
             {workersChange && (
               <div className={`stat-change ${parseFloat(workersChange) >= 0 ? 'positive' : 'negative'}`}>
                 {parseFloat(workersChange) >= 0 ? <FaArrowUp /> : <FaArrowDown />}
-                {Math.abs(workersChange)}% पिछले साल से
+                {Math.abs(workersChange)}% {t('fromLastYear')}
               </div>
             )}
           </div>
@@ -155,11 +155,11 @@ export default function Dashboard({ district }) {
           </div>
           <div className="stat-content">
             <h3>{totalJobcards.toLocaleString('en-IN')}</h3>
-            <p>📋 कुल जॉबकार्ड</p>
+            <p>{t('jobcardsLabel')}</p>
             {jobcardsChange && (
               <div className={`stat-change ${parseFloat(jobcardsChange) >= 0 ? 'positive' : 'negative'}`}>
                 {parseFloat(jobcardsChange) >= 0 ? <FaArrowUp /> : <FaArrowDown />}
-                {Math.abs(jobcardsChange)}% पिछले साल से
+                {Math.abs(jobcardsChange)}% {t('fromLastYear')}
               </div>
             )}
           </div>
@@ -171,7 +171,7 @@ export default function Dashboard({ district }) {
           </div>
           <div className="stat-content">
             <h3>{totalPersondays.toLocaleString('en-IN')}</h3>
-            <p>🧱 कुल कार्य दिवस</p>
+            <p>{t('persondaysLabel')}</p>
           </div>
         </div>
 
@@ -181,7 +181,7 @@ export default function Dashboard({ district }) {
           </div>
           <div className="stat-content">
             <h3>₹{totalExpenditure.toLocaleString('en-IN')}</h3>
-            <p>💰 कुल खर्च (लाख)</p>
+            <p>{t('expenditureLabel')}</p>
           </div>
         </div>
       </div>
@@ -190,7 +190,7 @@ export default function Dashboard({ district }) {
       {metricsData && metricsData.length > 0 ? (
         <>
           <div className="chart-section">
-            <h3 className="section-title">📊 मासिक रुझान (Monthly Trend)</h3>
+            <h3 className="section-title">{t('monthlyTrend')}</h3>
             <ResponsiveContainer width="100%" height={280}>
               <LineChart data={chartData}>
                 <CartesianGrid strokeDasharray="3 3" />
@@ -203,7 +203,7 @@ export default function Dashboard({ district }) {
           </div>
 
           <div className="chart-section">
-            <h3 className="section-title">📈 मासिक तुलना (Monthly Comparison)</h3>
+            <h3 className="section-title">{t('monthlyComparison')}</h3>
             <ResponsiveContainer width="100%" height={280}>
               <BarChart data={chartData}>
                 <CartesianGrid strokeDasharray="3 3" />
@@ -218,7 +218,7 @@ export default function Dashboard({ district }) {
       ) : (
         <div className="chart-section">
           <p style={{textAlign: 'center', color: '#999'}}>
-            📊 Chart data उपलब्ध नहीं है
+            {t('noData')}
           </p>
         </div>
       )}

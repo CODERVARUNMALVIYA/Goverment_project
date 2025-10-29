@@ -2,11 +2,13 @@ import React, { useEffect, useState } from 'react';
 import Dashboard from './components/Dashboard';
 import DistrictSelector from './components/DistrictSelector';
 import { t, setLocale, getLocale } from './i18n';
+import './styles.css';
 
 function App() {
   const [district, setDistrict] = useState(null);
   const [districts, setDistricts] = useState([]);
   const [currentLang, setCurrentLang] = useState(getLocale());
+  const [, forceUpdate] = useState(0); // Force re-render trigger
 
   useEffect(() => {
     // fetch district list from backend
@@ -19,6 +21,8 @@ function App() {
   const changeLanguage = (lang) => {
     setLocale(lang);
     setCurrentLang(lang);
+    // Force all components to re-render with new translations
+    forceUpdate(prev => prev + 1);
   };
 
   return (
@@ -46,10 +50,15 @@ function App() {
           districts={districts}
           onSelect={setDistrict}
           currentLang={currentLang}
+          key={`selector-${currentLang}`}
         />
 
         {district ? (
-          <Dashboard district={district} key={`${district}-${currentLang}`} />
+          <Dashboard 
+            district={district} 
+            currentLang={currentLang}
+            key={`${district}-${currentLang}`} 
+          />
         ) : (
           <div className="placeholder">{t('chooseDistrict')}</div>
         )}

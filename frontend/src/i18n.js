@@ -31,6 +31,25 @@ const translations = {
     persondays: 'Person Days Generated',
     works: 'Works Completed',
     expenditure: 'Total Expenditure (₹ Lakhs)',
+    workersLabel: '👷‍♂️ Total Workers',
+    jobcardsLabel: '📋 Total Jobcards',
+    persondaysLabel: '🧱 Total Person Days',
+    expenditureLabel: '💰 Total Expenditure (Lakhs)',
+    fromLastYear: 'from last year',
+    monthlyTrend: '📊 Monthly Trend',
+    monthlyComparison: '📈 Monthly Comparison',
+    // Location detection messages
+    browserNotSupported: 'Your browser does not support location detection. Please select district manually.',
+    locationDenied: 'Location permission is denied. Please enable location permission in browser settings.',
+    yourLocation: 'Your location',
+    nearestDistrict: 'Nearest district',
+    selectThis: 'Select this?',
+    addToDatabase: 'Add this district to database?',
+    districtName: 'District Name',
+    stateName: 'State Name',
+    addingDistrict: 'Adding district to database...',
+    districtAdded: 'District added successfully!',
+    addFailed: 'Failed to add district. Please try again.',
     // District names (English - no translation needed)
     Patna: 'Patna', Gaya: 'Gaya', Muzaffarpur: 'Muzaffarpur', Bhagalpur: 'Bhagalpur', Darbhanga: 'Darbhanga',
     Nalanda: 'Nalanda', Rohtas: 'Rohtas', Purnia: 'Purnia', Begusarai: 'Begusarai', Siwan: 'Siwan',
@@ -84,6 +103,25 @@ const translations = {
     persondays: 'व्यक्ति दिवस उत्पन्न',
     works: 'कार्य पूर्ण',
     expenditure: 'कुल व्यय (₹ लाख)',
+    workersLabel: '👷‍♂️ कुल श्रमिक',
+    jobcardsLabel: '📋 कुल जॉबकार्ड',
+    persondaysLabel: '🧱 कुल कार्य दिवस',
+    expenditureLabel: '💰 कुल खर्च (लाख)',
+    fromLastYear: 'पिछले साल से',
+    monthlyTrend: '📊 मासिक रुझान (Monthly Trend)',
+    monthlyComparison: '📈 मासिक तुलना (Monthly Comparison)',
+    // Location detection messages
+    browserNotSupported: 'आपका ब्राउज़र location detection support नहीं करता। कृपया manually district select करें।',
+    locationDenied: 'Location permission denied है। Browser settings में जाकर location permission enable करें।',
+    yourLocation: 'आपकी location',
+    nearestDistrict: 'सबसे नजदीकी district',
+    selectThis: 'क्या यह select करें?',
+    addToDatabase: 'क्या इस district को database में add करें?',
+    districtName: 'District का नाम',
+    stateName: 'State का नाम',
+    addingDistrict: 'District database में add हो रहा है...',
+    districtAdded: 'District सफलतापूर्वक add हो गया!',
+    addFailed: 'District add नहीं हो सका। कृपया फिर से कोशिश करें।',
     // District names in Hindi
     Patna: 'पटना', Gaya: 'गया', Muzaffarpur: 'मुजफ्फरपुर', Bhagalpur: 'भागलपुर', Darbhanga: 'दरभंगा',
     Nalanda: 'नालंदा', Rohtas: 'रोहतास', Purnia: 'पूर्णिया', Begusarai: 'बेगूसराय', Siwan: 'सीवान',
@@ -109,15 +147,30 @@ const translations = {
 };
 
 let locale = 'hi'; // default to Hindi for rural focus
+let listeners = []; // Track components that need re-render
 
 export function t(key) {
   return translations[locale][key] || translations['en'][key] || key;
 }
 
 export function setLocale(l) {
-  if (translations[l]) locale = l;
+  if (translations[l]) {
+    locale = l;
+    // Notify all listeners (components) to re-render
+    listeners.forEach(listener => listener(locale));
+  }
 }
 
-export function getLocale() { return locale; }
+export function getLocale() { 
+  return locale; 
+}
 
-export default { t, setLocale, getLocale };
+// Subscribe to locale changes
+export function subscribe(listener) {
+  listeners.push(listener);
+  return () => {
+    listeners = listeners.filter(l => l !== listener);
+  };
+}
+
+export default { t, setLocale, getLocale, subscribe };

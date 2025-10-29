@@ -8,7 +8,7 @@ export default function DistrictSelector({ districts = [], onSelect, currentLang
 
   async function detectLocation() {
     if (!navigator.geolocation) {
-      alert('आपका ब्राउज़र location detection support नहीं करता। कृपया manually district select करें।');
+      alert(t('browserNotSupported'));
       return;
     }
     
@@ -21,7 +21,7 @@ export default function DistrictSelector({ districts = [], onSelect, currentLang
         console.log('Location permission status:', permissionStatus.state);
         
         if (permissionStatus.state === 'denied') {
-          alert('Location permission denied है। Browser settings में जाकर location permission enable करें।');
+          alert(t('locationDenied'));
           setIsDetecting(false);
           return;
         }
@@ -79,7 +79,7 @@ export default function DistrictSelector({ districts = [], onSelect, currentLang
               if (fuzzyMatch) {
                 console.log('Fuzzy matched district:', fuzzyMatch);
                 // Show confirmation with auto-select
-                if (window.confirm(`📍 आपकी location: ${possibleDistrict}\n\n✓ सबसे नजदीकी district: ${t(fuzzyMatch)}\n\nक्या यह select करें?`)) {
+                if (window.confirm(`📍 ${t('yourLocation')}: ${possibleDistrict}\n\n✓ ${t('nearestDistrict')}: ${t(fuzzyMatch)}\n\n${t('selectThis')}`)) {
                   onSelect(fuzzyMatch);
                   setIsDetecting(false);
                   return;
@@ -88,11 +88,10 @@ export default function DistrictSelector({ districts = [], onSelect, currentLang
               
               // If still no match, offer to add district to database
               const shouldAdd = window.confirm(
-                `📍 पता चला: ${possibleDistrict}\n` +
+                `📍 ${t('yourLocation')}: ${possibleDistrict}\n` +
                 `State: ${addr.state || 'Unknown'}\n\n` +
-                `यह जिला database में नहीं है।\n\n` +
-                `क्या इस district को database में add करें?\n` +
-                `(आपके लिए data generate होगा)`
+                `${t('addToDatabase')}\n` +
+                `(Data automatically generated)`
               );
               
               if (shouldAdd) {
@@ -115,7 +114,7 @@ export default function DistrictSelector({ districts = [], onSelect, currentLang
                   
                   if (result.ok) {
                     console.log('✅ District added:', result);
-                    alert(`✅ District "${possibleDistrict}" successfully added!\n\nDashboard load हो रहा है...`);
+                    alert(`✅ ${t('districtAdded')}\n\nLoading dashboard...`);
                     
                     // Automatically select the newly added district
                     onSelect(possibleDistrict);
@@ -126,18 +125,18 @@ export default function DistrictSelector({ districts = [], onSelect, currentLang
                   }
                 } catch (addError) {
                   console.error('Error adding district:', addError);
-                  alert(`❌ District add करने में error: ${addError.message}\n\nकृपया manually search करें।`);
+                  alert(`❌ ${t('addFailed')}\n${addError.message}`);
                 }
               }
               
               setIsDetecting(false);
             }
           } else {
-            alert('Location से district पता नहीं चल सका। कृपया manually select करें।');
+            alert(t('noData'));
           }
         } catch (err) {
           console.error('Geocoding error:', err);
-          alert('Location detect करने में problem आई। कृपया manually district select करें।');
+          alert(t('browserNotSupported'));
         } finally {
           setIsDetecting(false);
         }
