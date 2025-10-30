@@ -1,7 +1,7 @@
 // Quick script to seed the database with sample data
 require('dotenv').config();
 const mongoose = require('mongoose');
-const { seedDatabase } = require('./utils/seedData');
+const { seedDatabase } = require('./src/utils/seedData');
 
 const mongoUri = process.env.MONGO_URI || 'mongodb://localhost:27017/mgnrega';
 

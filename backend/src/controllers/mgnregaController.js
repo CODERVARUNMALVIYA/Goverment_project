@@ -1,16 +1,18 @@
-const express = require('express');
-const router = express.Router();
 const Report = require('../models/Report');
+const { HTTP_STATUS } = require('../constants');
 
-// Get performance data for a specific district
-router.get('/district/:district', async (req, res) => {
-  const districtQuery = req.params.district;
-  const yearFilter = parseInt(req.query.year) || null;
-  
+/**
+ * Get performance data for a specific district
+ */
+const getDistrictData = async (req, res, next) => {
   try {
+    const districtQuery = req.params.district;
+    const yearFilter = parseInt(req.query.year) || null;
+    
     const matchCriteria = { 
       district: new RegExp(`^${districtQuery}$`, 'i') // case-insensitive exact match
     };
+    
     if (yearFilter) {
       matchCriteria.year = yearFilter;
     }
@@ -21,7 +23,7 @@ router.get('/district/:district', async (req, res) => {
       .lean();
     
     if (!reports || reports.length === 0) {
-      return res.status(404).json({ 
+      return res.status(HTTP_STATUS.NOT_FOUND).json({ 
         ok: false, 
         message: `No data found for district: ${districtQuery}`,
         suggestion: 'Try checking district list or trigger a data sync'
@@ -31,12 +33,14 @@ router.get('/district/:district', async (req, res) => {
     res.json({ ok: true, data: reports, count: reports.length });
   } catch (err) {
     console.error('District query error:', err);
-    res.status(500).json({ ok: false, error: 'Database query failed', details: err.message });
+    next(err);
   }
-});
+};
 
-// List all available districts (for the selector dropdown)
-router.get('/districts', async (req, res) => {
+/**
+ * List all available districts
+ */
+const getDistricts = async (req, res, next) => {
   try {
     const uniqueDistricts = await Report.distinct('district');
     
@@ -52,17 +56,22 @@ router.get('/districts', async (req, res) => {
     });
   } catch (err) {
     console.error('Districts list error:', err);
-    res.status(500).json({ ok: false, error: 'Failed to fetch districts', details: err.message });
+    next(err);
   }
-});
+};
 
-// Get summary stats (optional bonus endpoint for dashboard)
-router.get('/stats', async (req, res) => {
+/**
+ * Get summary statistics
+ */
+const getStats = async (req, res, next) => {
   try {
     const totalReports = await Report.countDocuments();
     const totalDistricts = (await Report.distinct('district')).length;
     const totalStates = (await Report.distinct('state')).length;
-    const latestUpdate = await Report.findOne().sort({ sourceUpdatedAt: -1 }).select('sourceUpdatedAt').lean();
+    const latestUpdate = await Report.findOne()
+      .sort({ sourceUpdatedAt: -1 })
+      .select('sourceUpdatedAt')
+      .lean();
     
     res.json({
       ok: true,
@@ -75,17 +84,19 @@ router.get('/stats', async (req, res) => {
     });
   } catch (err) {
     console.error('Stats error:', err);
-    res.status(500).json({ ok: false, error: 'Stats query failed' });
+    next(err);
   }
-});
+};
 
-// POST /api/mgnrega/add-district - Dynamically add a new district
-router.post('/add-district', async (req, res) => {
+/**
+ * Dynamically add a new district
+ */
+const addDistrict = async (req, res, next) => {
   try {
     const { district, state, detectedFrom } = req.body;
     
     if (!district || !state) {
-      return res.status(400).json({
+      return res.status(HTTP_STATUS.BAD_REQUEST).json({
         ok: false,
         message: 'District and state are required'
       });
@@ -161,12 +172,13 @@ router.post('/add-district', async (req, res) => {
     
   } catch (err) {
     console.error('Error adding district:', err);
-    res.status(500).json({
-      ok: false,
-      message: 'Failed to add district',
-      error: err.message
-    });
+    next(err);
   }
-});
+};
 
-module.exports = router;
+module.exports = {
+  getDistrictData,
+  getDistricts,
+  getStats,
+  addDistrict
+};
