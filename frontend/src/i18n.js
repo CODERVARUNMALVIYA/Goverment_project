@@ -122,7 +122,8 @@ const translations = {
     addingDistrict: 'District database में add हो रहा है...',
     districtAdded: 'District सफलतापूर्वक add हो गया!',
     addFailed: 'District add नहीं हो सका। कृपया फिर से कोशिश करें।',
-    // District names in Hindi
+    // District names in Hindi (Comprehensive list for all states)
+    // Existing translations
     Patna: 'पटना', Gaya: 'गया', Muzaffarpur: 'मुजफ्फरपुर', Bhagalpur: 'भागलपुर', Darbhanga: 'दरभंगा',
     Nalanda: 'नालंदा', Rohtas: 'रोहतास', Purnia: 'पूर्णिया', Begusarai: 'बेगूसराय', Siwan: 'सीवान',
     Lucknow: 'लखनऊ', Kanpur: 'कानपुर', Varanasi: 'वाराणसी', Agra: 'आगरा', Allahabad: 'इलाहाबाद',
@@ -142,7 +143,14 @@ const translations = {
     Raipur: 'रायपुर', Bilaspur: 'बिलासपुर', Durg: 'दुर्ग', Korba: 'कोरबा', Rajnandgaon: 'राजनांदगांव',
     Bhilai: 'भिलाई', Jagdalpur: 'जगदलपुर', Raigarh: 'रायगढ़', Dhamtari: 'धमतरी', Mahasamund: 'महासमुंद',
     Visakhapatnam: 'विशाखापत्तनम', Vijayawada: 'विजयवाड़ा', Guntur: 'गुंटूर', Nellore: 'नेल्लोर', Tirupati: 'तिरुपति',
-    Kakinada: 'काकीनाडा', Rajahmundry: 'राजमुंदरी', Kurnool: 'कुर्नूल', Anantapur: 'अनंतपुर', Kadapa: 'कडपा'
+    Kakinada: 'काकीनाडा', Rajahmundry: 'राजमुंदरी', Kurnool: 'कुर्नूल', Anantapur: 'अनंतपुर', Kadapa: 'कडपा',
+    // Additional districts from screenshot
+    Adilabad: 'आदिलाबाद', 'Agar Malwa': 'आगरा मालवा', Ahmedabad: 'अहमदाबाद', Aizawl: 'आइजोल', Akola: 'अकोला',
+    Alappuzha: 'अलाप्पुझा', Alipurduar: 'अलीपुरदुआर', Alirajpur: 'अलीराजपुर', Almora: 'अल्मोड़ा',
+    Ambala: 'अंबाला', 'Ambedkar Nagar': 'अंबेडकर नगर', Amethi: 'अमेठी', Amravati: 'अमरावती', Amreli: 'अमरेली',
+    Amritsar: 'अमृतसर', Amroha: 'अमरोहा', Anand: 'आनंद', Anantpur: 'अनंतपुर', Anantnag: 'अनंतनाग',
+    Anjaw: 'अंजॉ', Anuppur: 'अनूपपुर', Araria: 'अररिया', Aravalli: 'अरावली', Ariyalur: 'अरियालुर',
+    Arwal: 'अरवल', Ashoknagar: 'अशोकनगर', Auraiya: 'औरैया'
   }
 };
 
