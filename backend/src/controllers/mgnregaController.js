@@ -105,13 +105,18 @@ const addDistrict = async (req, res, next) => {
     console.log(`📍 New district request: ${district}, ${state}`);
     console.log(`   Detected from: ${detectedFrom || 'manual'}`);
     
-    // Check if district already exists
-    const existing = await Report.findOne({ district, state });
+    // Check if district already exists (case-insensitive)
+    const existing = await Report.findOne({ 
+      district: new RegExp(`^${district}$`, 'i'),
+      state: new RegExp(`^${state}$`, 'i')
+    });
+    
     if (existing) {
-      return res.json({
+      return res.status(200).json({
         ok: true,
         message: 'District already exists',
-        alreadyExists: true
+        alreadyExists: true,
+        district: existing.district
       });
     }
     
@@ -163,16 +168,22 @@ const addDistrict = async (req, res, next) => {
     
     console.log(`✅ Added ${recordsToAdd.length} records for ${district}, ${state}`);
     
-    res.json({
+    return res.status(200).json({
       ok: true,
       message: `District ${district} added successfully`,
       recordsAdded: recordsToAdd.length,
+      district: district,
       data: recordsToAdd
     });
     
   } catch (err) {
     console.error('Error adding district:', err);
-    next(err);
+    // Always send a JSON response even on error
+    return res.status(500).json({
+      ok: false,
+      message: err.message || 'Failed to add district',
+      error: process.env.NODE_ENV === 'development' ? err.stack : undefined
+    });
   }
 };
 

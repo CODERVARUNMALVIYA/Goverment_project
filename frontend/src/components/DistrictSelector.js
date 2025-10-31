@@ -100,9 +100,14 @@ export default function DistrictSelector({ districts = [], onSelect, currentLang
                 
                 try {
                   const apiBase = process.env.REACT_APP_API_BASE_URL || '/api';
+                  console.log('API Base URL:', apiBase);
+                  
                   const response = await fetch(`${apiBase}/mgnrega/add-district`, {
                     method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
+                    headers: { 
+                      'Content-Type': 'application/json',
+                      'Accept': 'application/json'
+                    },
                     body: JSON.stringify({
                       district: possibleDistrict,
                       state: addr.state || 'Unknown',
@@ -110,14 +115,29 @@ export default function DistrictSelector({ districts = [], onSelect, currentLang
                     })
                   });
                   
+                  console.log('Response status:', response.status);
+                  console.log('Response headers:', response.headers);
+                  
+                  // Check if response is OK before parsing JSON
+                  if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                  }
+                  
+                  // Check if response has content
+                  const contentType = response.headers.get('content-type');
+                  if (!contentType || !contentType.includes('application/json')) {
+                    throw new Error('Response is not JSON. Server might be down or misconfigured.');
+                  }
+                  
                   const result = await response.json();
+                  console.log('API Response:', result);
                   
                   if (result.ok) {
                     console.log('✅ District added:', result);
                     alert(`✅ ${t('districtAdded')}\n\nLoading dashboard...`);
                     
                     // Automatically select the newly added district
-                    onSelect(possibleDistrict);
+                    onSelect(result.district || possibleDistrict);
                     setIsDetecting(false);
                     return;
                   } else {
@@ -125,7 +145,7 @@ export default function DistrictSelector({ districts = [], onSelect, currentLang
                   }
                 } catch (addError) {
                   console.error('Error adding district:', addError);
-                  alert(`❌ ${t('addFailed')}\n${addError.message}`);
+                  alert(`❌ ${t('addFailed')}\n${addError.message}\n\nPlease check:\n1. Backend server is running\n2. CORS is configured\n3. API URL is correct`);
                 }
               }
               
