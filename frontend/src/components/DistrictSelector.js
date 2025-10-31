@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { t } from '../i18n';
 import { FaMapMarkerAlt, FaSearch } from 'react-icons/fa';
+import { matchesSearch, getDisplayName } from '../utils/districtNames';
 
 export default function DistrictSelector({ districts = [], onSelect, currentLang }) {
   const [searchTerm, setSearchTerm] = useState('');
@@ -184,12 +185,7 @@ export default function DistrictSelector({ districts = [], onSelect, currentLang
     );
   }
 
-  const filteredDistricts = districts.filter(d => {
-    const searchLower = searchTerm.toLowerCase();
-    const englishName = d.toLowerCase();
-    const hindiName = t(d).toLowerCase();
-    return englishName.includes(searchLower) || hindiName.includes(searchLower);
-  });
+  const filteredDistricts = districts.filter(d => matchesSearch(d, searchTerm, currentLang));
 
   return (
     <div className="district-selector">
@@ -209,6 +205,7 @@ export default function DistrictSelector({ districts = [], onSelect, currentLang
             placeholder={t('searchPlaceholder')}
             value={searchTerm}
             onChange={e => setSearchTerm(e.target.value)}
+            lang={currentLang}
           />
         </div>
       </div>
@@ -220,7 +217,7 @@ export default function DistrictSelector({ districts = [], onSelect, currentLang
             className="district-card" 
             onClick={() => onSelect(d)}
           >
-            {t(d)}
+            {getDisplayName(d, currentLang)}
           </button>
         ))}
       </div>
