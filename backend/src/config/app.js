@@ -7,7 +7,7 @@ module.exports = {
   nodeEnv: process.env.NODE_ENV || 'development',
   
   // Frontend configuration
-  frontendUrl: process.env.FRONTEND_URL || 'http://localhost:3000',
+  frontendUrl: process.env.FRONTEND_URL || 'https://goverment-project-frontend-y575.onrender.com',
   
   // CORS configuration
   cors: {
@@ -20,7 +20,7 @@ module.exports = {
         'http://localhost:3000',
         'http://localhost:5000',
         'http://127.0.0.1:3000',
-        'https://frontnd.onrender.com' // Add your actual production frontend URL
+        'https://goverment-project-frontend-y575.onrender.com' // Add your actual production frontend URL
       ].filter(Boolean);
       
       if (allowedOrigins.includes(origin) || process.env.NODE_ENV === 'development') {
