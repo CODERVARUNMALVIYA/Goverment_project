@@ -1,21 +1,28 @@
 /**
  * District name translations and search helper
- * Uses i18n translations first, then shows "(जिला)" suffix for untranslated districts in Hindi mode
+ * Uses comprehensive Hindi names dictionary + i18n fallback
  */
 import { t } from '../i18n';
+import { DISTRICT_HINDI_NAMES } from '../constants/districtHindiNames';
 
 /**
  * Get Hindi name for a district
- * First checks i18n translations, if not found returns English name with Hindi suffix
+ * Priority: 1) Comprehensive dictionary 2) i18n translation 3) English name
  */
 export function getHindiName(englishName) {
+  // First check comprehensive dictionary
+  if (DISTRICT_HINDI_NAMES[englishName]) {
+    return DISTRICT_HINDI_NAMES[englishName];
+  }
+  
+  // Fallback to i18n
   const translated = t(englishName);
-  // If translation exists and is different from English name, use it
   if (translated && translated !== englishName) {
     return translated;
   }
-  // For untranslated districts, show English name with district suffix in Hindi
-  return `${englishName}`; // Keep English for districts without translation
+  
+  // If no translation, return English name
+  return englishName;
 }
 
 /**
@@ -39,13 +46,7 @@ export function matchesSearch(districtName, searchTerm, currentLang) {
  */
 export function getDisplayName(districtName, currentLang) {
   if (currentLang === 'hi') {
-    const hindiName = t(districtName);
-    // Return Hindi translation if it exists and is different from English
-    if (hindiName && hindiName !== districtName) {
-      return hindiName;
-    }
-    // Otherwise return English name (user can still search in both languages)
-    return districtName;
+    return getHindiName(districtName);
   }
   return districtName;
 }
