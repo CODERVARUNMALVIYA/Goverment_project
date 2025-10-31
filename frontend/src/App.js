@@ -12,10 +12,15 @@ function App() {
 
   useEffect(() => {
     // fetch district list from backend
-    fetch(process.env.REACT_APP_API_BASE_URL ? `${process.env.REACT_APP_API_BASE_URL}/mgnrega/districts` : '/api/mgnrega/districts')
+    const apiBaseUrl = process.env.REACT_APP_API_BASE_URL || 'https://goverment-project-backend.onrender.com/api';
+    console.log('API Base URL:', apiBaseUrl);
+    
+    fetch(`${apiBaseUrl}/mgnrega/districts`)
       .then(r => r.json())
       .then(j => { if (j.ok) setDistricts(j.districts || []); })
-      .catch(() => { /* ignore */ });
+      .catch((err) => { 
+        console.error('Failed to fetch districts:', err);
+      });
   }, []);
 
   const changeLanguage = (lang) => {

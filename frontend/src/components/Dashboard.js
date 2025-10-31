@@ -15,8 +15,9 @@ export default function Dashboard({ district, currentLang }) {
     setIsLoading(true);
     setError(null);
     
-    const apiBase = process.env.REACT_APP_API_BASE_URL || '/api';
+    const apiBase = process.env.REACT_APP_API_BASE_URL || 'https://goverment-project-backend.onrender.com/api';
     const endpoint = `${apiBase}/mgnrega/district/${encodeURIComponent(district)}`;
+    console.log('Fetching district data from:', endpoint);
     
     fetch(endpoint)
       .then(response => {

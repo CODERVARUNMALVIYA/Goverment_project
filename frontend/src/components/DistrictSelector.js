@@ -99,7 +99,7 @@ export default function DistrictSelector({ districts = [], onSelect, currentLang
                 console.log('Adding new district to database...');
                 
                 try {
-                  const apiBase = process.env.REACT_APP_API_BASE_URL || '/api';
+                  const apiBase = process.env.REACT_APP_API_BASE_URL || 'https://goverment-project-backend.onrender.com/api';
                   console.log('API Base URL:', apiBase);
                   
                   const response = await fetch(`${apiBase}/mgnrega/add-district`, {
