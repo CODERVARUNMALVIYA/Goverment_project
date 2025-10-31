@@ -12,29 +12,30 @@ function App() {
   const [, forceUpdate] = useState(0); // Force re-render trigger
 
   useEffect(() => {
-    // Fetch district list from backend
+    // Show all India districts immediately
+    setDistricts(ALL_INDIA_DISTRICTS);
+    console.log(`✅ Loaded ${ALL_INDIA_DISTRICTS.length} India districts initially`);
+    
+    // Then fetch backend districts and merge
     const apiBaseUrl = process.env.REACT_APP_API_BASE_URL || 'https://goverment-project-backend.onrender.com/api';
     console.log('API Base URL:', apiBaseUrl);
     
     fetch(`${apiBaseUrl}/mgnrega/districts`)
-      .then(r => r.json())
+      .then(r => {
+        if (!r.ok) throw new Error(`HTTP ${r.status}`);
+        return r.json();
+      })
       .then(j => { 
-        if (j.ok && j.districts) {
+        if (j.ok && j.districts && j.districts.length > 0) {
           // Merge backend districts with all India districts (remove duplicates)
           const mergedDistricts = [...new Set([...j.districts, ...ALL_INDIA_DISTRICTS])].sort();
           setDistricts(mergedDistricts);
-          console.log(`✅ Loaded ${mergedDistricts.length} districts (${j.districts.length} with data, ${mergedDistricts.length - j.districts.length} without data)`);
-        } else {
-          // If backend fails, show all India districts
-          setDistricts(ALL_INDIA_DISTRICTS);
-          console.log(`✅ Loaded ${ALL_INDIA_DISTRICTS.length} India districts (backend unavailable)`);
+          console.log(`✅ Merged: ${j.districts.length} districts with data + ${ALL_INDIA_DISTRICTS.length} total = ${mergedDistricts.length} unique districts`);
         }
       })
       .catch((err) => { 
-        console.error('Failed to fetch districts:', err);
-        // Fallback to all India districts if backend fails
-        setDistricts(ALL_INDIA_DISTRICTS);
-        console.log(`✅ Loaded ${ALL_INDIA_DISTRICTS.length} India districts (fallback)`);
+        console.warn('Backend unavailable, using India districts only:', err.message);
+        // Keep ALL_INDIA_DISTRICTS as fallback (already set above)
       });
   }, []);
 
