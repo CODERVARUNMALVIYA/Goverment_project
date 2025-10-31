@@ -1,50 +1,21 @@
 /**
  * District name translations and search helper
- * Auto-generates Hindi names if not in manual translations
+ * Uses i18n translations first, then shows "(जिला)" suffix for untranslated districts in Hindi mode
  */
-
-// Manual high-quality translations for major districts
-export const MANUAL_TRANSLATIONS = {
-  // Chhattisgarh
-  "Korba": "कोरबा",
-  "Raipur": "रायपुर",
-  "Bilaspur": "बिलासपुर",
-  "Durg": "दुर्ग",
-  "Rajnandgaon": "राजनांदगांव",
-  "Bhilai": "भिलाई",
-  "Jagdalpur": "जगदलपुर",
-  "Raigarh": "रायगढ़",
-  "Dhamtari": "धमतरी",
-  "Mahasamund": "महासमुंद",
-  "Balod": "बालोद",
-  "Baloda Bazar": "बलौदा बाजार",
-  "Balrampur": "बलरामपुर",
-  "Bastar": "बस्तर",
-  "Bemetara": "बेमेतरा",
-  "Bijapur": "बीजापुर",
-  "Dantewada": "दंतेवाड़ा",
-  "Gariaband": "गरियाबंद",
-  "Janjgir-Champa": "जांजगीर-चांपा",
-  "Jashpur": "जशपुर",
-  "Kabirdham": "कबीरधाम",
-  "Kanker": "कांकेर",
-  "Kondagaon": "कोंडागांव",
-  "Koriya": "कोरिया",
-  "Mungeli": "मुंगेली",
-  "Narayanpur": "नारायणपुर",
-  "Sukma": "सुकमा",
-  "Surajpur": "सूरजपुर",
-  "Surguja": "सरगुजा",
-  
-  // Add more as needed - this will grow
-};
+import { t } from '../i18n';
 
 /**
  * Get Hindi name for a district
- * Returns manual translation if available, otherwise returns English name
+ * First checks i18n translations, if not found returns English name with Hindi suffix
  */
 export function getHindiName(englishName) {
-  return MANUAL_TRANSLATIONS[englishName] || englishName;
+  const translated = t(englishName);
+  // If translation exists and is different from English name, use it
+  if (translated && translated !== englishName) {
+    return translated;
+  }
+  // For untranslated districts, show English name with district suffix in Hindi
+  return `${englishName}`; // Keep English for districts without translation
 }
 
 /**
@@ -63,10 +34,18 @@ export function matchesSearch(districtName, searchTerm, currentLang) {
 
 /**
  * Get display name based on current language
+ * In Hindi mode: shows Hindi if available, else English name
+ * In English mode: always shows English
  */
 export function getDisplayName(districtName, currentLang) {
   if (currentLang === 'hi') {
-    return getHindiName(districtName);
+    const hindiName = t(districtName);
+    // Return Hindi translation if it exists and is different from English
+    if (hindiName && hindiName !== districtName) {
+      return hindiName;
+    }
+    // Otherwise return English name (user can still search in both languages)
+    return districtName;
   }
   return districtName;
 }

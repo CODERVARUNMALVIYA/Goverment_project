@@ -62,10 +62,44 @@ export default function Dashboard({ district, currentLang }) {
   if (error) {
     return (
       <div className="panel error-panel">
-        <p className="error-msg">{error}</p>
-        <button onClick={() => window.location.reload()}>
-          <FaSyncAlt /> फिर से कोशिश करें
-        </button>
+        <p className="error-msg">📍 {district} के लिए डेटा उपलब्ध नहीं है</p>
+        <p style={{fontSize: '14px', color: '#666', margin: '10px 0'}}>
+          क्या आप इस district का data automatically generate करना चाहते हैं?
+        </p>
+        <div style={{display: 'flex', gap: '10px', justifyContent: 'center'}}>
+          <button onClick={async () => {
+            const apiBase = process.env.REACT_APP_API_BASE_URL || 'https://goverment-project-backend.onrender.com/api';
+            try {
+              setIsLoading(true);
+              setError(null);
+              const response = await fetch(`${apiBase}/mgnrega/add-district`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                  district: district,
+                  state: 'Unknown', // You might want to add state detection
+                  detectedFrom: 'dashboard-request'
+                })
+              });
+              const result = await response.json();
+              if (result.ok) {
+                alert('✅ District successfully added! Reloading data...');
+                window.location.reload();
+              } else {
+                alert('❌ Failed to add district: ' + result.message);
+              }
+            } catch (err) {
+              alert('❌ Error: ' + err.message);
+            } finally {
+              setIsLoading(false);
+            }
+          }}>
+            ➕ District Add करें (Auto Data)
+          </button>
+          <button onClick={() => window.location.reload()} style={{background: '#6c757d'}}>
+            <FaSyncAlt /> फिर से कोशिश करें
+          </button>
+        </div>
       </div>
     );
   }
